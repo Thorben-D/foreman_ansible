@@ -69,7 +69,7 @@ ModalConfirmButton.defaultProps = {
     vcs_url: null,
   },
   repoName: '',
-  gitRef: 'master',
+  gitRef: 'main',
   originalRepoName: '',
   isModalButtonLoading: false,
   isModalButtonActive: false,

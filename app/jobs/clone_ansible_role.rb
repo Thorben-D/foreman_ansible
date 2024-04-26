@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 class CloneAnsibleRole < ::ApplicationJob
   queue_as :default
 
   def humanized_name
-    _('Clone Ansible Role from VCS')
+    _('Download Ansible Role from Git')
   end
 
   def perform(repo_info, proxy)

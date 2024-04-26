@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module ForemanAnsible
   class VcsCloner
     include ::ForemanAnsible::ProxyAPI

@@ -34,7 +34,7 @@ module ForemanAnsible
     def vcs_import
       select_action_button("",
                            { :primary => true, :class => 'roles-import' },
-                           link_to(_("Import from VCS"), "#vcs_import"))
+                           link_to(_("Download from Git"), "#git_download"))
     end
 
     def import_time(role)

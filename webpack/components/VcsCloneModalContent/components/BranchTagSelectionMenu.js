@@ -14,11 +14,11 @@ import { translate as __ } from 'foremanReact/common/I18n';
 import { MultiSelectorMenu } from './MultiSelectorMenu';
 
 export const BranchTagSelectionMenu = props => {
-  const [activeTabKey, setActiveTabKey] = useState(0);
+  const [activeTabKey, setActiveTabKey] = useState(2);
 
   useEffect(() => {
     if (!props.branchTagsEnabled) {
-      setActiveTabKey(0);
+      setActiveTabKey(2);
     }
   }, [props.branchTagsEnabled]);
 
@@ -30,8 +30,34 @@ export const BranchTagSelectionMenu = props => {
       isBox
     >
       <Tab
-        data-testid="BranchTagSelectionMenuManualTab"
+        data-testid="BranchTagSelectionMenuBranchTab"
         eventKey={0}
+        title={<TabTitleText>{__('Branches')}</TabTitleText>}
+        isDisabled={!props.branchTagsEnabled}
+      >
+        <MultiSelectorMenu
+          repoInfo={props.repoInfo}
+          displayData="branches"
+          gitRef={props.gitRef}
+          setGitRef={props.setGitRef}
+        />
+      </Tab>
+      <Tab
+        data-testid="BranchTagSelectionMenuTagTab"
+        eventKey={1}
+        title={<TabTitleText>{__('Tags')}</TabTitleText>}
+        isDisabled={!props.branchTagsEnabled}
+      >
+        <MultiSelectorMenu
+          repoInfo={props.repoInfo}
+          displayData="tags"
+          gitRef={props.gitRef}
+          setGitRef={props.setGitRef}
+        />
+      </Tab>
+      <Tab
+        data-testid="BranchTagSelectionMenuManualTab"
+        eventKey={2}
         title={<TabTitleText>{__('Manual input')}</TabTitleText>}
       >
         <Form>
@@ -74,32 +100,6 @@ export const BranchTagSelectionMenu = props => {
           </FormGroup>
         </Form>
       </Tab>
-      <Tab
-        data-testid="BranchTagSelectionMenuBranchTab"
-        eventKey={1}
-        title={<TabTitleText>{__('Branches')}</TabTitleText>}
-        isDisabled={!props.branchTagsEnabled}
-      >
-        <MultiSelectorMenu
-          repoInfo={props.repoInfo}
-          displayData="branches"
-          gitRef={props.gitRef}
-          setGitRef={props.setGitRef}
-        />
-      </Tab>
-      <Tab
-        data-testid="BranchTagSelectionMenuTagTab"
-        eventKey={2}
-        title={<TabTitleText>{__('Tags')}</TabTitleText>}
-        isDisabled={!props.branchTagsEnabled}
-      >
-        <MultiSelectorMenu
-          repoInfo={props.repoInfo}
-          displayData="tags"
-          gitRef={props.gitRef}
-          setGitRef={props.setGitRef}
-        />
-      </Tab>
     </Tabs>
   );
 };
@@ -117,7 +117,7 @@ BranchTagSelectionMenu.defaultProps = {
     tags: {},
     vcs_url: null,
   },
-  gitRef: 'master',
+  gitRef: 'main',
   setGitRef: () => {},
   branchTagsEnabled: false,
 };

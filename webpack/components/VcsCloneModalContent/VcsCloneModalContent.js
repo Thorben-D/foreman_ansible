@@ -45,12 +45,12 @@ export const VcsCloneModalContent = () => {
    */
   useEffect(() => {
     // Handle direct link ...#vcs_import
-    if (window.location.hash === '#vcs_import') {
+    if (window.location.hash === '#git_download') {
       handleModalToggle();
     }
     // Set event listener for anchor change
     onhashchange = () => {
-      if (window.location.hash === '#vcs_import') {
+      if (window.location.hash === '#git_download') {
         handleModalToggle();
       }
     };
@@ -140,7 +140,7 @@ export const VcsCloneModalContent = () => {
    */
   const handleModalToggle = useCallback(() => {
     if (isModalOpen) {
-      setGitRef('master');
+      setGitRef('main');
       setInstalledRoles({});
       setRepoName('');
       setIsModalButtonLoading(false);
@@ -167,7 +167,7 @@ export const VcsCloneModalContent = () => {
     <React.Fragment>
       <Modal
         variant={ModalVariant.medium}
-        title={__('Get Ansible roles from Git')}
+        title={__('Download Ansible roles from Git')}
         isOpen={isModalOpen}
         onClose={handleModalToggle}
         actions={[

@@ -34,13 +34,11 @@ Rails.application.routes.draw do
         end
         resources :smart_proxies, :only => [] do
           member do
-            scope '/ansible' do
-              get 'repo_information', to: 'vcs_clone#repo_information'
-              get 'roles', to: 'vcs_clone#installed_roles'
-              post 'roles', to: 'vcs_clone#install_role'
-              put 'roles/:role_name', to: 'vcs_clone#update_role', constraints: { role_name: %r{[^\/]+} }
-              delete 'roles/:role_name', to: 'vcs_clone#delete_role', constraints: { role_name: %r{[^\/]+} }
-            end
+            get 'repository_metadata', to: 'vcs_clone#repository_metadata'
+            get 'roles', to: 'vcs_clone#installed_roles'
+            post 'roles', to: 'vcs_clone#install_role'
+            put 'roles/:role_name', to: 'vcs_clone#update_role', constraints: { role_name: %r{[^\/]+} }
+            delete 'roles/:role_name', to: 'vcs_clone#delete_role', constraints: { role_name: %r{[^\/]+} }
           end
         end
       end

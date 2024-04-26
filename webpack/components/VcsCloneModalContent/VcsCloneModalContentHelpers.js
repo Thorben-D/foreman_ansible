@@ -24,7 +24,7 @@ export const fetchSmartProxies = async () => {
 
 export const getRepoInfo = async (smartProxyId, repoUrl) => {
   const response = await fetch(
-    `/api/v2/smart_proxies/${smartProxyId}/ansible/repo_information?${new URLSearchParams(
+    `/api/v2/smart_proxies/${smartProxyId}/repository_metadata?${new URLSearchParams(
       {
         vcs_url: repoUrl,
       }
@@ -53,8 +53,8 @@ export const installRole = async (
 ) => {
   const response = await fetch(
     updateExisting
-      ? `/api/v2/smart_proxies/${smartProxyId}/ansible/roles/${repoName}`
-      : `/api/v2/smart_proxies/${smartProxyId}/ansible/roles`,
+      ? `/api/v2/smart_proxies/${smartProxyId}/roles/${repoName}`
+      : `/api/v2/smart_proxies/${smartProxyId}/roles`,
     {
       method: updateExisting ? 'PUT' : 'POST',
       headers: {
@@ -64,7 +64,7 @@ export const installRole = async (
       body: JSON.stringify({
         repo_info: {
           vcs_url: repoUrl,
-          name: repoName,
+          role_name: repoName,
           ref: repoRef,
         },
       }),

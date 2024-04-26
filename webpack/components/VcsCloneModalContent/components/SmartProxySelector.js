@@ -33,16 +33,13 @@ export const SmartProxySelector = props => {
        * @param proxyId SmartProxy from which the roles should be queried.
        */
       const getInstalledRolesAtProxy = async proxyId => {
-        const response = await fetch(
-          `/api/v2/smart_proxies/${proxyId}/ansible/roles`,
-          {
-            method: 'GET',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const response = await fetch(`/api/v2/smart_proxies/${proxyId}/roles`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
         if (response.ok) {
           const responseJson = await response.json();
           const installedRolesMap = new Map();

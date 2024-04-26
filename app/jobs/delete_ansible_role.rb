@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 class DeleteAnsibleRole < ::ApplicationJob
   queue_as :default
 
   def humanized_name
-    _('Delete Ansible Role')
+    _('Delete Ansible Role from Smart Proxy')
   end
 
   def perform(role_name, proxy)

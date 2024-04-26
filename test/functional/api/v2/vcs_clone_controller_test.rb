@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'test_plugin_helper'
 
 module Api
@@ -16,7 +14,7 @@ module Api
           response = JSON.parse(@response.body)
           assert_response :bad_request
           assert_equal({ 'error' =>
-                           { 'message' => 'Smart proxy does not have foreman_ansible installed / is not capable of cloning from VCS' } }, response)
+                           { 'message' => 'Smart Proxy is missing foreman_ansible installation or Git cloning capability' } }, response)
         end
       end
       describe '#repo_information' do

@@ -60,7 +60,7 @@ module ProxyAPI
       raise e unless e.is_a? RestClient::RequestFailed
       case e.http_code
       when 400
-        raise Foreman::Exception.new N_('Error requesting repo-info. Check Smartproxy log.')
+        raise Foreman::Exception.new N_('Error requesting repository metadata. Check Smart Proxy log.')
       else
         raise
       end

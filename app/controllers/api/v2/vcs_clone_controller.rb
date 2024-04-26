@@ -1,9 +1,21 @@
-# frozen_string_literal: true
-
 module Api
   module V2
     class VcsCloneController < ::Api::V2::BaseController
       include ::ForemanAnsible::ProxyAPI
+      include ::Api::Version2
+
+      resource_description do
+        api_version 'v2'
+        api_base_url '/ansible/api'
+      end
+
+      def_param_group :repo_information do
+        param :repo_info, Hash, :desc => N_('Hash containing info about the Ansible role to be installed') do
+          param :vcs_url, String, :desc => N_('URL of the repository'), :required => true
+          param :role_name, String, :desc => N_('Name of the Ansible role'), :required => true
+          param :ref, String, :desc => N_('Branch / Tag / Commit reference'), :required => true
+        end
+      end
 
       rescue_from ActionController::ParameterMissing do |e|
         render json: { 'error' => e.message }, status: :bad_request
@@ -13,62 +25,54 @@ module Api
 
       before_action :set_proxy_api
 
-      api :GET, '/smart_proxies/:proxy_name/ansible/vcs_clone/repo_information',
-          N_('Queries metadata about the repo')
-      param :proxy_name, Array, N_('Name of the SmartProxy'), :required => true
-      param :vcs_url, String, N_('Url of the repo'), :required => true
-      error 400, :desc => N_('Parameter unfulfilled / invalid repo-info')
-      def repo_information
+      api :GET, '/smart_proxies/:smart_proxy_id/ansible/vcs_clone/repository_metadata',
+          N_('Retrieve metadata about the repository associated with a Smart Proxy.')
+      param :smart_proxy_id, Array, N_('Name of the Smart Proxy'), :required => true
+      param :vcs_url, String, N_('URL of the repository'), :required => true
+      error 400, :desc => N_('Invalid or missing parameters')
+      def repository_metadata
         vcs_url = params.require(:vcs_url)
         render json: @proxy_api.repo_information(vcs_url)
       end
 
-      api :GET, '/smart_proxies/:proxy_name/ansible/vcs_clone/roles',
-          N_('Returns an array of roles installed on the provided proxy')
+      api :GET, '/smart_proxies/:smart_proxy_id/ansible/vcs_clone/roles',
+          N_('Returns an array of Ansible roles installed on the provided Smart Proxy')
       formats ['json']
-      param :proxy_name, Array, N_('Name of the SmartProxy'), :required => true
-      error 400, :desc => N_('Parameter unfulfilled')
+      param :smart_proxy_id, Array, N_('Name of the SmartProxy'), :required => true
+      error 400, :desc => N_('Invalid or missing parameters')
       def installed_roles
         render json: @proxy_api.list_installed
       end
 
-      api :POST, '/smart_proxies/:proxy_name/ansible/vcs_clone/roles',
+      api :POST, '/smart_proxies/:smart_proxy_id/ansible/vcs_clone/roles',
           N_('Launches a task to install the provided role')
       formats ['json']
-      param :repo_info, Hash, :desc => N_('Dictionary containing info about the role to be installed') do
-        param :vcs_url, String, :desc => N_('Url of the repo'), :required => true
-        param :name, String, :desc => N_('Name of the repo'), :required => true
-        param :ref, String, :desc => N_('Branch / Tag / Commit reference'), :required => true
-      end
-      param :smart_proxy, Array, N_('SmartProxy the role should get installed to')
-      error 400, :desc => N_('Parameter unfulfilled')
+      param_group :repo_information
+      param :smart_proxy_id, Array, N_('Smart Proxy where the role should be installed')
+      error 400, :desc => N_('Invalid or missing parameters')
       def install_role
         payload = verify_install_role_parameters(params)
         start_vcs_task(payload, :install)
       end
 
-      api :PUT, '/smart_proxies/:proxy_name/ansible/vcs_clone/roles',
+      api :PUT, '/smart_proxies/:smart_proxy_id/ansible/vcs_clone/roles',
           N_('Launches a task to update the provided role')
       formats ['json']
-      param :repo_info, Hash, :desc => N_('Dictionary containing info about the role to be installed') do
-        param :vcs_url, String, :desc => N_('Url of the repo'), :required => true
-        param :name, String, :desc => N_('Name of the repo'), :required => true
-        param :ref, String, :desc => N_('Branch / Tag / Commit reference'), :required => true
-      end
-      param :smart_proxy, Array, N_('SmartProxy the role should get installed to')
-      error 400, :desc => N_('Parameter unfulfilled')
+      param_group :repo_information
+      param :smart_proxy_id, Array, N_('Smart Proxy where the role should be installed')
+      error 400, :desc => N_('Invalid or missing parameters')
       def update_role
         payload = verify_update_role_parameters(params)
         payload['name'] = params.require(:role_name)
         start_vcs_task(payload, :update)
       end
 
-      api :DELETE, '/smart_proxies/:proxy_name/ansible/vcs_clone/roles/:role_name',
+      api :DELETE, '/smart_proxies/:smart_proxy_id/ansible/vcs_clone/roles/:role_name',
           N_('Launches a task to delete the provided role')
       formats ['json']
-      param :role_name, String, :desc => N_('Name of the role that should be deleted')
-      param :smart_proxy, Array, N_('SmartProxy the role should get deleted from')
-      error 400, :desc => N_('Parameter unfulfilled')
+      param :role_name, String, :desc => N_('Name of the role to be deleted')
+      param :smart_proxy_id, Array, N_('Smart Proxy to delete the role from')
+      error 400, :desc => N_('Invalid or missing parameters')
       def delete_role
         payload = params.require(:role_name)
         start_vcs_task(payload, :delete)
@@ -86,7 +90,7 @@ module Api
           msg = _('Smart proxy does not exist')
           return render_error('custom_error', :status => :bad_request, :locals => { :message => msg })
         else unless ansible_proxy.has_capability?('Ansible', 'vcs_clone')
-               msg = _('Smart proxy does not have foreman_ansible installed / is not capable of cloning from VCS')
+               msg = _('Smart Proxy is missing foreman_ansible installation or Git cloning capability')
                return render_error('custom_error', :status => :bad_request, :locals => { :message => msg })
              end
         end
@@ -99,7 +103,7 @@ module Api
           permit(
             repo_info: [
               :vcs_url,
-              :name,
+              :role_name,
               :ref
             ]
           ).to_h
@@ -107,7 +111,7 @@ module Api
 
       def verify_install_role_parameters(params)
         payload = permit_parameters params
-        %w[vcs_url name ref].each do |param|
+        %w[vcs_url role_name ref].each do |param|
           raise ActionController::ParameterMissing.new(param) unless payload['repo_info'].key?(param)
         end
         payload
