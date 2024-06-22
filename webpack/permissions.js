@@ -1,0 +1,16 @@
+export const PLAY_ROLES_ON_HOST = 'play_roles_on_host';
+export const PLAY_ROLES_ON_HOSTGROUP = 'play_roles_on_hostgroup';
+export const VIEW_ANSIBLE_ROLES = 'view_ansible_roles';
+export const DESTROY_ANSIBLE_ROLES = 'destroy_ansible_roles';
+export const IMPORT_ANSIBLE_ROLES = 'import_ansible_roles';
+export const VIEW_ANSIBLE_VARIABLES = 'view_ansible_variables';
+export const EDIT_ANSIBLE_VARIABLES = 'edit_ansible_variables';
+export const DESTROY_ANSIBLE_VARIABLES = 'destroy_ansible_variables';
+export const CREATE_ANSIBLE_VARIABLES = 'create_ansible_variables';
+export const IMPORT_ANSIBLE_VARIABLES = 'import_ansible_variables';
+export const VIEW_HOSTS = 'view_hosts';
+export const VIEW_HOSTGROUPS = 'view_hostgroups';
+export const EDIT_HOSTS = 'edit_hosts';
+export const EDIT_HOSTGROUPS = 'edit_hostgroups';
+export const GENERATE_ANSIBLE_INVENTORY = 'generate_ansible_inventory';
+export const IMPORT_ANSIBLE_PLAYBOOKS = 'import_ansible_playbooks';
